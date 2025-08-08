@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather App</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Weather App</h1>
+
+    <h2>Get Live Weather Data</h2>
+    <form method="post" action="/get_weather">
+        <label for="city_live">City:</label>
+        <input type="text" id="city_live" name="city" required>
+        <button type="submit">Fetch</button>
+    </form>
+
+    {% if message %}
+        <p><strong>{{ message }}</strong></p>
+    {% endif %}
+</body>
+</html>
