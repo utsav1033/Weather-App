@@ -22,6 +22,39 @@ async def read_form(request: Request):
 
 from datetime import datetime
 
+
+@app.get("/history", response_class=HTMLResponse)
+async def history(request: Request):
+    raw_records = list(collection.find().sort("_id", -1))
+
+    # Prepare records for template (convert ObjectId & datetime, handle missing fields)
+    records = []
+    for rec in raw_records:
+        record = {}
+
+        record["requested_city"] = rec.get("requested_city", "N/A")
+        record["status_code"] = rec.get("status_code", "N/A")
+        record["api_url"] = rec.get("api_url", "N/A")
+
+        # Convert datetime to string safely
+        req_time = rec.get("request_time")
+        if isinstance(req_time, datetime):
+            record["request_time"] = req_time.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            record["request_time"] = "N/A"
+
+        # Convert api_response to dict or string
+        api_response = rec.get("api_response", {})
+        record["api_response"] = api_response
+
+        records.append(record)
+
+    return templates.TemplateResponse("history.html", {
+        "request": request,
+        "records": records
+    })
+
+
 @app.post("/get_weather", response_class=HTMLResponse)
 async def get_weather(request: Request, city: str = Form(...)):
     try:
